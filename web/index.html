@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Review Signal</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="masthead">
+      <div class="brand"><span class="brand-mark">RS</span><span>Review Signal</span></div>
+      <div class="status"><span class="status-dot"></span><span id="statusText">Baseline model online</span></div>
+    </header>
+
+    <section class="intro">
+      <p class="eyebrow">Aspect sentiment lab</p>
+      <h1>Turn one review<br><em>into five signals.</em></h1>
+      <p class="lede">Write the complete review first. When you are ready, send it through the aspect model in one pass.</p>
+    </section>
+
+    <section class="workspace">
+      <div class="review-panel">
+        <div class="panel-top"><span class="panel-label">New review</span><span id="wordCount">0 words</span></div>
+        <textarea id="reviewText" autofocus placeholder="Tell us about the food, service, room, price..." maxlength="5000"></textarea>
+        <div class="input-footer"><span id="saveState">Waiting for your review</span><button id="goButton" type="button"><span>Go</span><span aria-hidden="true">→</span></button></div>
+      </div>
+      <div class="signals-panel">
+        <div class="panel-top"><span class="panel-label">Aspect readout</span><span class="live-label"><span></span> AFTER SUBMIT</span></div>
+        <div id="signalList" class="signal-list"></div>
+        <div class="legend"><span><i class="legend-swatch positive"></i> positive</span><span><i class="legend-swatch neutral"></i> neutral</span><span><i class="legend-swatch negative"></i> negative</span></div>
+      </div>
+    </section>
+    <footer><span>Five aspects now · labels and trained stars can be connected later</span><span class="csv-note">● saved after Go</span></footer>
+  </main>
+  <script src="/app.js"></script>
+</body>
+</html>

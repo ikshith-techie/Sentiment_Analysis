@@ -1,0 +1,7 @@
+__pycache__/
+*.py[cod]
+outputs/*.png
+outputs/top_terms.csv
+outputs/numeric_summary.csv
+outputs/sentiment_summary.csv
+outputs/aspect_sentiment_summary.csv

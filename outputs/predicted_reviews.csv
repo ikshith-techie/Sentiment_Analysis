@@ -1,0 +1,3 @@
+review_id,text,food_stars,food_sentiment,service_stars,service_sentiment,ambience_stars,ambience_sentiment,value_stars,value_sentiment,cleanliness_stars,cleanliness_sentiment
+79db4d3a-fe00-404f-81db-0a4238e6dcde,The food quality is bad. Rather very bad. But the staffs were gentle and well behaved.,2,negative,2,negative,2,negative,2,negative,2,negative
+6a7b3cbd-54e7-4241-9809-02b7f468b358,The food was very bad but staffs were polite.,2,negative,2,negative,2,negative,2,negative,2,negative
