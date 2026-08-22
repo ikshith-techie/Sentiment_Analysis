@@ -6,7 +6,7 @@ const statusText = document.querySelector('#statusText');
 const goButton = document.querySelector('#goButton');
 const reviewId = crypto.randomUUID();
 
-const labels = { food: 'Food', service: 'Service', ambience: 'Ambience', value: 'Value', cleanliness: 'Cleanliness' };
+const labels = { food_quality: 'Food quality', ambience: 'Ambience', prices: 'Prices', location: 'Location', general: 'General' };
 
 function renderEmpty() {
   signalList.innerHTML = '<div class="empty-state"><span class="empty-icon">✦</span><p>Your aspect signals<br>will appear here.</p></div>';

@@ -1,13 +1,18 @@
 # Review Sentiment Analysis
 
-This starter workflow keeps `synthetic_raw.csv` unchanged and prepares the review text for later aspect-level star prediction.
+This workflow reads `1000_ds_Sentiment_analysis.csv` and prepares its selected aspect labels for analysis.
 
 ## Run
 
 ```powershell
 py -m pip install -r requirements.txt
 py preprocess_and_eda.py
+py model_1.py
 ```
+
+## Model versions
+
+`model_1.py` is the baseline TF-IDF plus Logistic Regression approach. It trains all five selected aspect classifiers together and writes `outputs/model_1.joblib` and `outputs/model_1_metrics.json`. Future advanced approaches should be added as `model_2.py`, with their own versioned artifacts and metrics.
 
 The script writes `outputs/` containing:
 
@@ -17,7 +22,7 @@ The script writes `outputs/` containing:
 
 Cleaning includes HTML decoding/removal, URL and email removal, lowercasing, conservative chat-word normalization, emoji sentiment conversion, repeated-character normalization, punctuation removal, tokenization, stopword-aware term analysis, stemming, and optional WordNet lemmatization. Automatic spelling correction is intentionally not enabled until the domain vocabulary and annotation policy are fixed.
 
-When the new labels arrive, keep one sentiment column per aspect (for example `food_sentiment`, `ambience_sentiment`) and map each aspect's `positive`/`negative` label to its own 1–5 star target. The long annotation table is the compatible intermediate format.
+The selected source columns are `FOOD#QUALITY`, `AMBIENCE#GENERAL`, `FOOD#PRICES`, `LOCATION#GENERAL`, and `RESTAURANT#GENERAL`. They become Food quality, Ambience, Prices, Location, and General in the long annotation table. Because this dataset has no overall star column, the EDA-only `stars` value is derived from the selected labels: positive = 5, negative = 1, and mixed/neutral = 3.
 
 ## Local interface
 
@@ -27,4 +32,4 @@ Start the review interface with:
 py app.py
 ```
 
-Open `http://127.0.0.1:8000`. The current baseline scores Food, Service, Ambience, Value, and Cleanliness as a placeholder. Type the complete review, then press **Go** (or `Ctrl/Cmd+Enter`) to score it and upsert it into `outputs/predicted_reviews.csv` with columns such as `food_stars`, `service_stars`, and `ambience_stars`. Replace `predict()` in `app.py` with the trained aspect model after the corrected labels are supplied.
+Open `http://127.0.0.1:8000`. The current baseline scores Food quality, Ambience, Prices, Location, and General as a placeholder. Type the complete review, then press **Go** (or `Ctrl/Cmd+Enter`) to score it and upsert it into `outputs/predicted_reviews.csv`. Replace `predict()` in `app.py` with the trained aspect model after model training.

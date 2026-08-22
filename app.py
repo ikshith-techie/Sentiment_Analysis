@@ -19,11 +19,11 @@ HOST = "127.0.0.1"
 PORT = 8000
 
 ASPECTS = {
-    "food": {"label": "Food", "terms": {"food", "dish", "meal", "taste", "flavor", "flavour", "menu", "pizza", "chicken", "ramen", "soup"}},
-    "service": {"label": "Service", "terms": {"service", "staff", "waiter", "waitress", "manager", "host", "order", "wait", "rude"}},
+    "food_quality": {"label": "Food quality", "terms": {"food", "dish", "meal", "taste", "flavor", "flavour", "menu", "pizza", "chicken", "ramen", "soup", "fresh", "bland"}},
     "ambience": {"label": "Ambience", "terms": {"ambience", "atmosphere", "music", "decor", "quiet", "loud", "cozy", "crowded", "place"}},
-    "value": {"label": "Value", "terms": {"price", "priced", "cost", "value", "cheap", "expensive", "worth", "money", "portion"}},
-    "cleanliness": {"label": "Cleanliness", "terms": {"clean", "dirty", "hygiene", "bathroom", "table", "floor", "smell", "sanitary"}},
+    "prices": {"label": "Prices", "terms": {"price", "prices", "priced", "cost", "value", "cheap", "expensive", "worth", "money", "portion"}},
+    "location": {"label": "Location", "terms": {"location", "located", "area", "near", "close", "drive", "parking", "neighborhood"}},
+    "general": {"label": "General", "terms": {"restaurant", "place", "experience", "overall", "visit", "recommend", "return", "back"}},
 }
 POSITIVE = {"amazing", "awesome", "best", "delicious", "excellent", "good", "great", "happy", "love", "perfect", "pleasant", "recommend", "wonderful"}
 NEGATIVE = {"awful", "bad", "disappoint", "dirty", "horrible", "poor", "rude", "sad", "terrible", "worst", "bland", "slow", "cold", "overpriced"}

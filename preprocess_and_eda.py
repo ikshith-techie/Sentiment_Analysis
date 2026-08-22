@@ -22,10 +22,18 @@ from wordcloud import WordCloud
 
 
 ROOT = Path(__file__).resolve().parent
-INPUT_PATH = ROOT / "synthetic_raw.csv"
+INPUT_PATH = ROOT / "1000_ds_Sentiment_analysis.csv"
 OUTPUT_DIR = ROOT / "outputs"
 STEMMER = SnowballStemmer("english")
 STOPWORDS = set(ENGLISH_STOP_WORDS)
+
+SELECTED_ASPECTS = {
+    "food_quality": "FOOD#QUALITY",
+    "ambience": "AMBIENCE#GENERAL",
+    "prices": "FOOD#PRICES",
+    "location": "LOCATION#GENERAL",
+    "general": "RESTAURANT#GENERAL",
+}
 
 # Conservative chat normalization: preserve meaning while handling common shorthand.
 CHAT_WORDS = {
@@ -96,6 +104,18 @@ def lemmatize_tokens(tokens: list[str]) -> list[str]:
 
 def build_aspect_table(data: pd.DataFrame) -> pd.DataFrame:
     """Convert numbered wide labels into a future-friendly long annotation table."""
+    if set(SELECTED_ASPECTS.values()).issubset(data.columns):
+        rows = []
+        for aspect, column in SELECTED_ASPECTS.items():
+            subset = data[["review_id", column]].rename(columns={column: "sentiment"}).copy()
+            subset["aspect"] = aspect
+            subset["aspect_term"] = ""
+            subset["category"] = column
+            subset["is_implicit"] = False
+            rows.append(subset[["review_id", "aspect", "aspect_term", "category", "sentiment", "is_implicit"]])
+        result = pd.concat(rows, ignore_index=True)
+        return result[result["sentiment"].notna() & result["sentiment"].ne("")]
+
     rows = []
     for column in data.columns:
         match = re.fullmatch(r"labels/(\d+)/category", column)
@@ -144,6 +164,13 @@ def save_eda(data: pd.DataFrame, tokens: list[str]) -> None:
 
 def main() -> None:
     data = pd.read_csv(INPUT_PATH, low_memory=False)
+    if set(SELECTED_ASPECTS.values()).issubset(data.columns):
+        data = data.rename(columns={"id": "review_id", "review": "text"})
+        source_columns = list(SELECTED_ASPECTS.values())
+        sentiment_values = data[source_columns].fillna("").astype(str).agg(", ".join, axis=1)
+        data["stars"] = sentiment_values.map(
+            lambda value: 5 if "positive" in value and "negative" not in value else 1 if "negative" in value and "positive" not in value else 3
+        )
     data["clean_text"] = data["text"].map(clean_text)
     data["tokens"] = data["clean_text"].map(tokenize)
     data["lemmas"] = data["tokens"].map(lemmatize_tokens)
