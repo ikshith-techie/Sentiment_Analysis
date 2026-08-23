@@ -7,12 +7,31 @@ This workflow reads `1000_ds_Sentiment_analysis.csv` and prepares its selected a
 ```powershell
 py -m pip install -r requirements.txt
 py preprocess_and_eda.py
-py model_1.py
+py train_models.py
 ```
 
 ## Model versions
 
-`model_1.py` is the baseline TF-IDF plus Logistic Regression approach. It trains all five selected aspect classifiers together and writes `outputs/model_1.joblib` and `outputs/model_1_metrics.json`. Future advanced approaches should be added as `model_2.py`, with their own versioned artifacts and metrics.
+`model_1.py` remains the baseline TF-IDF plus Logistic Regression approach. The standalone model scripts are:
+
+- `model_2.py`: Linear SVM
+- `model_3.py`: Complement Naive Bayes
+- `model_4.py`: Multinomial Naive Bayes
+- `model_5.py`: SGD with modified Huber loss
+- `model_6.py`: Logistic Regression
+- `model_7.py`: Ridge Classifier
+- `model_8.py`: Passive-Aggressive Classifier
+- `model_9.py`: Bernoulli Naive Bayes
+
+Run any standalone model with `py model_2.py` (replace the number as needed). Each writes its own `outputs/model_N.joblib` and `outputs/model_N_metrics.json`. `train_models.py` still benchmarks all five CPU-friendly classifiers, writes `outputs/model_benchmark.joblib`, selects the highest macro-F1 model per aspect in `outputs/model_best.joblib`, and records timing in `outputs/model_benchmark_metrics.json`. GPU-heavy neural models are intentionally not run here.
+
+To combine all standalone metrics into one model-keyed dictionary, run:
+
+```powershell
+py result.py
+```
+
+This creates `outputs/result.json` with `model1` through `model9`. Each aspect contains only `accuracy`, `macro_f1`, and `weighted_f1`.
 
 The script writes `outputs/` containing:
 

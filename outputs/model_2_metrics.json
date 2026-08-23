@@ -1,0 +1,81 @@
+{
+  "food_quality": {
+    "model": "linear_svm",
+    "labeled_rows": 798,
+    "train_rows": 638,
+    "test_rows": 160,
+    "class_counts": {
+      "positive": 406,
+      "negative": 187,
+      "mixed": 172,
+      "neutral": 33
+    },
+    "accuracy": 0.6687,
+    "macro_f1": 0.5202,
+    "weighted_f1": 0.6513,
+    "seconds": 0.159
+  },
+  "ambience": {
+    "model": "linear_svm",
+    "labeled_rows": 342,
+    "train_rows": 273,
+    "test_rows": 69,
+    "class_counts": {
+      "positive": 197,
+      "negative": 113,
+      "mixed": 27,
+      "neutral": 5
+    },
+    "accuracy": 0.6667,
+    "macro_f1": 0.3327,
+    "weighted_f1": 0.634,
+    "seconds": 0.079
+  },
+  "prices": {
+    "model": "linear_svm",
+    "labeled_rows": 140,
+    "train_rows": 112,
+    "test_rows": 28,
+    "class_counts": {
+      "negative": 72,
+      "positive": 62,
+      "neutral": 4,
+      "mixed": 2
+    },
+    "accuracy": 0.5357,
+    "macro_f1": 0.3427,
+    "weighted_f1": 0.5099,
+    "seconds": 0.043
+  },
+  "location": {
+    "model": "linear_svm",
+    "labeled_rows": 73,
+    "train_rows": 58,
+    "test_rows": 15,
+    "class_counts": {
+      "positive": 46,
+      "negative": 25,
+      "neutral": 2
+    },
+    "accuracy": 0.5333,
+    "macro_f1": 0.4444,
+    "weighted_f1": 0.5185,
+    "seconds": 0.017
+  },
+  "general": {
+    "model": "linear_svm",
+    "labeled_rows": 491,
+    "train_rows": 392,
+    "test_rows": 99,
+    "class_counts": {
+      "positive": 277,
+      "negative": 182,
+      "neutral": 19,
+      "mixed": 13
+    },
+    "accuracy": 0.7374,
+    "macro_f1": 0.3748,
+    "weighted_f1": 0.7152,
+    "seconds": 0.078
+  }
+}
