@@ -8,7 +8,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 OUTPUT_DIR = ROOT / "outputs"
-MODEL_NUMBERS = range(1, 10)
+MODEL_NUMBERS = range(1, 14)
 RESULT_PATH = OUTPUT_DIR / "result.json"
 
 
@@ -16,6 +16,8 @@ def main() -> None:
     result = {}
     for number in MODEL_NUMBERS:
         metrics_path = OUTPUT_DIR / f"model_{number}_metrics.json"
+        if not metrics_path.exists():
+            continue
         with metrics_path.open("r", encoding="utf-8") as file:
             metrics = json.load(file)
         result[f"model{number}"] = {

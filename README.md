@@ -22,8 +22,25 @@ py train_models.py
 - `model_7.py`: Ridge Classifier
 - `model_8.py`: Passive-Aggressive Classifier
 - `model_9.py`: Bernoulli Naive Bayes
+- `model_10.py`: DistilBERT transformer
+- `model_11.py`: BERT transformer
+- `model_12.py`: RoBERTa transformer
+- `model_13.py`: DeBERTa transformer
 
-Run any standalone model with `py model_2.py` (replace the number as needed). Each writes its own `outputs/model_N.joblib` and `outputs/model_N_metrics.json`. `train_models.py` still benchmarks all five CPU-friendly classifiers, writes `outputs/model_benchmark.joblib`, selects the highest macro-F1 model per aspect in `outputs/model_best.joblib`, and records timing in `outputs/model_benchmark_metrics.json`. GPU-heavy neural models are intentionally not run here.
+Run any standalone CPU model with `py model_2.py` (replace the number as needed). Each writes its own `outputs/model_N.joblib` and `outputs/model_N_metrics.json`. `train_models.py` still benchmarks all five CPU-friendly classifiers, writes `outputs/model_benchmark.joblib`, selects the highest macro-F1 model per aspect in `outputs/model_best.joblib`, and records timing in `outputs/model_benchmark_metrics.json`.
+
+## Advanced GPU models
+
+`model_10.py` through `model_13.py` fine-tune transformer classifiers for the same five aspect labels. Each checkpoint is trained separately for each aspect. The Hugging Face model files are saved below `outputs/advanced_models/`, while metrics use the same numbered format as the earlier models.
+
+On the college server, install the PyTorch build that matches its CUDA version first, then install the project dependencies:
+
+```powershell
+py -m pip install -r requirements.txt
+py model_10.py
+```
+
+Run `py model_11.py`, `py model_12.py`, or `py model_13.py` for the other transformer checkpoints. These scripts download large checkpoints and require substantial GPU memory, so they are intended for the college server. The shared `train_advanced_models.py` module contains the implementation and optional CLI controls such as `--epochs`, `--batch-size`, and `--max-length`.
 
 To combine all standalone metrics into one model-keyed dictionary, run:
 
@@ -31,7 +48,7 @@ To combine all standalone metrics into one model-keyed dictionary, run:
 py result.py
 ```
 
-This creates `outputs/result.json` with `model1` through `model9`. Each aspect contains only `accuracy`, `macro_f1`, and `weighted_f1`.
+This creates `outputs/result.json` with whichever numbered model metrics are available, including `model10` through `model13` after GPU training. Each aspect contains only `accuracy`, `macro_f1`, and `weighted_f1`.
 
 The script writes `outputs/` containing:
 
