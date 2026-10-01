@@ -36,8 +36,10 @@ SELECTED_ASPECTS = {
 def normalize_label(value: object) -> str:
     if pd.isna(value):
         return ""
-    labels = {part.strip() for part in str(value).split(",") if part.strip()}
-    return next(iter(labels)) if len(labels) == 1 else "mixed" if labels else ""
+    labels = {part.strip().lower() for part in str(value).split(",") if part.strip()}
+    if not labels:
+        return ""
+    return "mixed_neutral" if len(labels) > 1 or labels & {"mixed", "neutral"} else next(iter(labels))
 
 
 def make_pipeline(classifier: object) -> Pipeline:

@@ -26,12 +26,22 @@ py train_models.py
 - `model_11.py`: BERT transformer
 - `model_12.py`: RoBERTa transformer
 - `model_13.py`: DeBERTa transformer
+- `model_14.py`: DeBERTa-v3-large
+- `model_15.py`: RoBERTa-large
+- `model_16.py`: ELECTRA-base
+- `model_17.py`: XLNet-base
+- `model_18.py`: ALBERT-base
+- `model_19.py`: DistilRoBERTa
+- `model_20.py`: cased BERT
+- `model_21.py`: DeBERTa-v3-small
+- `model_22.py`: RoBERTa with class-weighted cross-entropy
+- `model_23.py`: DeBERTa-v3 with focal loss
 
 Run any standalone CPU model with `py model_2.py` (replace the number as needed). Each writes its own `outputs/model_N.joblib` and `outputs/model_N_metrics.json`. `train_models.py` still benchmarks all five CPU-friendly classifiers, writes `outputs/model_benchmark.joblib`, selects the highest macro-F1 model per aspect in `outputs/model_best.joblib`, and records timing in `outputs/model_benchmark_metrics.json`.
 
 ## Advanced GPU models
 
-`model_10.py` through `model_13.py` fine-tune transformer classifiers for the same five aspect labels. Each checkpoint is trained separately for each aspect. The Hugging Face model files are saved below `outputs/advanced_models/`, while metrics use the same numbered format as the earlier models.
+`model_10.py` through `model_23.py` fine-tune transformer classifiers for the same five aspect labels. Each checkpoint is trained separately for each aspect. Models 22 and 23 add class-imbalance-aware loss functions; their artifacts use separate output folders. The Hugging Face model files are saved below `outputs/advanced_models/`, while metrics use the same numbered format as the earlier models.
 
 On the college server, install the PyTorch build that matches its CUDA version first, then install the project dependencies:
 
@@ -40,7 +50,7 @@ py -m pip install -r requirements.txt
 py model_10.py
 ```
 
-Run `py model_11.py`, `py model_12.py`, or `py model_13.py` for the other transformer checkpoints. These scripts download large checkpoints and require substantial GPU memory, so they are intended for the college server. The shared `train_advanced_models.py` module contains the implementation and optional CLI controls such as `--epochs`, `--batch-size`, and `--max-length`.
+Run `py model_11.py` through `py model_23.py` for the other transformer checkpoints and training variants. The large checkpoints require substantial GPU memory, so these scripts are intended for the college server. The shared `train_advanced_models.py` module contains the implementation and optional CLI controls such as `--epochs`, `--batch-size`, and `--max-length`.
 
 To combine all standalone metrics into one model-keyed dictionary, run:
 
@@ -48,7 +58,7 @@ To combine all standalone metrics into one model-keyed dictionary, run:
 py result.py
 ```
 
-This creates `outputs/result.json` with whichever numbered model metrics are available, including `model10` through `model13` after GPU training. Each aspect contains only `accuracy`, `macro_f1`, and `weighted_f1`.
+This creates `outputs/result.json` with whichever numbered model metrics are available, including `model10` through `model23` after GPU training. Each aspect contains only `accuracy`, `macro_f1`, and `weighted_f1`.
 
 The script writes `outputs/` containing:
 
@@ -59,6 +69,8 @@ The script writes `outputs/` containing:
 Cleaning includes HTML decoding/removal, URL and email removal, lowercasing, conservative chat-word normalization, emoji sentiment conversion, repeated-character normalization, punctuation removal, tokenization, stopword-aware term analysis, stemming, and optional WordNet lemmatization. Automatic spelling correction is intentionally not enabled until the domain vocabulary and annotation policy are fixed.
 
 The selected source columns are `FOOD#QUALITY`, `AMBIENCE#GENERAL`, `FOOD#PRICES`, `LOCATION#GENERAL`, and `RESTAURANT#GENERAL`. They become Food quality, Ambience, Prices, Location, and General in the long annotation table. Because this dataset has no overall star column, the EDA-only `stars` value is derived from the selected labels: positive = 5, negative = 1, and mixed/neutral = 3.
+
+For model training, the `neutral` label and mixed/multi-label annotations are combined into one `mixed_neutral` class. Positive and negative remain separate classes. This mapping is applied consistently by the baseline, classical benchmark, and advanced transformer trainers.
 
 ## Local interface
 

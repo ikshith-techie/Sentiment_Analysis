@@ -36,14 +36,30 @@ MODEL_CHECKPOINTS = {
     "bert": "bert-base-uncased",
     "roberta": "roberta-base",
     "deberta": "microsoft/deberta-v3-base",
+    "deberta-large": "microsoft/deberta-v3-large",
+    "roberta-large": "roberta-large",
+    "electra": "google/electra-base-discriminator",
+    "xlnet": "xlnet-base-cased",
+    "albert": "albert-base-v2",
+    "distilroberta": "distilroberta-base",
+    "bert-cased": "bert-base-cased",
+    "deberta-small": "microsoft/deberta-v3-small",
+    "roberta-weighted": "roberta-base",
+    "deberta-focal": "microsoft/deberta-v3-base",
+}
+LOSS_STRATEGIES = {
+    "roberta-weighted": "weighted",
+    "deberta-focal": "focal",
 }
 
 
 def normalize_label(value: object) -> str:
     if pd.isna(value):
         return ""
-    labels = {part.strip() for part in str(value).split(",") if part.strip()}
-    return next(iter(labels)) if len(labels) == 1 else "mixed" if labels else ""
+    labels = {part.strip().lower() for part in str(value).split(",") if part.strip()}
+    if not labels:
+        return ""
+    return "mixed_neutral" if len(labels) > 1 or labels & {"mixed", "neutral"} else next(iter(labels))
 
 
 def prepare_split(data: pd.DataFrame, column: str) -> tuple[pd.DataFrame, pd.DataFrame, list[str]]:
@@ -70,6 +86,7 @@ def train_aspect(
     batch_size: int,
     max_length: int,
     seed: int,
+    loss_strategy: str = "standard",
 ) -> dict[str, object]:
     try:
         import torch
@@ -101,7 +118,10 @@ def train_aspect(
             item["labels"] = self.labels[index]
             return item
 
-    output_path = OUTPUT_DIR / checkpoint.replace("/", "_") / aspect
+    output_name = checkpoint.replace("/", "_")
+    if loss_strategy != "standard":
+        output_name = f"{output_name}_{loss_strategy}"
+    output_path = OUTPUT_DIR / output_name / aspect
     output_path.mkdir(parents=True, exist_ok=True)
     model = AutoModelForSequenceClassification.from_pretrained(
         checkpoint,
@@ -124,7 +144,40 @@ def train_aspect(
         fp16=use_cuda,
         seed=seed,
     )
-    trainer = Trainer(
+    trainer_class = Trainer
+    if loss_strategy != "standard":
+        class_counts = torch.bincount(
+            torch.tensor([label_to_id[label] for label in train["label"]]),
+            minlength=len(labels),
+        ).float()
+        class_weights = (class_counts.sum() / (len(labels) * class_counts.clamp_min(1))).to(
+            torch.float
+        )
+
+        class AspectTrainer(Trainer):
+            def compute_loss(self, model, inputs, return_outputs=False, **kwargs):
+                batch = dict(inputs)
+                target = batch.pop("labels")
+                outputs = model(**batch)
+                logits = outputs.logits
+                weights = class_weights.to(logits.device)
+                if loss_strategy == "weighted":
+                    loss = torch.nn.functional.cross_entropy(
+                        logits, target, weight=weights
+                    )
+                else:
+                    per_item_loss = torch.nn.functional.cross_entropy(
+                        logits, target, reduction="none"
+                    )
+                    target_probability = torch.softmax(logits, dim=-1).gather(
+                        1, target.unsqueeze(1)
+                    ).squeeze(1)
+                    focal_factor = (1 - target_probability).pow(2)
+                    loss = (weights[target] * focal_factor * per_item_loss).mean()
+                return (loss, outputs) if return_outputs else loss
+
+        trainer_class = AspectTrainer
+    trainer = trainer_class(
         model=model,
         args=training_args,
         train_dataset=ReviewDataset(train),
@@ -161,6 +214,7 @@ def train_numbered_model(model_name: str, output_number: int, epochs: float = 4.
         metrics[aspect] = train_aspect(
             train, test, labels, checkpoint, aspect,
             epochs, batch_size, max_length, seed,
+            LOSS_STRATEGIES.get(model_name, "standard"),
         )
         print(f"model_{output_number}/{aspect}: macro F1={metrics[aspect]['macro_f1']:.3f}")
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)

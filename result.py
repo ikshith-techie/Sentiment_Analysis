@@ -8,7 +8,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 OUTPUT_DIR = ROOT / "outputs"
-MODEL_NUMBERS = range(1, 14)
+MODEL_NUMBERS = range(1, 24)
 RESULT_PATH = OUTPUT_DIR / "result.json"
 
 
